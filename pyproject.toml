@@ -1,0 +1,27 @@
+[project]
+name = "paper-darkmode-converter"
+version = "0.1.0"
+description = "논문 PDF를 다크모드로 변환 (Docling CUDA 기반 피규어 보존)"
+readme = "README.md"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+    "pymupdf>=1.24.0",
+    "docling>=2.0.0",
+    "numpy>=1.24.0",
+]
+
+[project.scripts]
+paper-darkmode = "paper_darkmode_converter:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu128" }]
+torchvision = [{ index = "pytorch-cu128" }]

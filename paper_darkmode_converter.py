@@ -301,7 +301,7 @@ def convert_dark_preserve_figures(input_path: str, output_path: str, figures: di
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 #  메인
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-if __name__ == "__main__":
+def main():
     if len(sys.argv) >= 2:
         src = sys.argv[1]
     else:
@@ -320,3 +320,7 @@ if __name__ == "__main__":
 
     # 2) 다크모드 변환 (피규어 보존)
     convert_dark_preserve_figures(src, dst, figures)
+
+
+if __name__ == "__main__":
+    main()
