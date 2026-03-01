@@ -1,7 +1,21 @@
 # PDF Dark Mode Converter
 
-논문 PDF를 다크모드로 변환하는 도구입니다.
-**Docling (CUDA)** 으로 피규어 영역을 자동 감지하여, 피규어는 원본 색상 그대로 보존하고 나머지(텍스트·배경·벡터)만 다크모드로 변환합니다.
+논문 PDF를 다크모드로 변환하는 python code 입니다.
+**Docling (CUDA)** 으로 피규어 영역을 자동 감지하여, 피규어는 원본 색상 그대로 보존하고 나머지(텍스트·배경·벡터)만 다크모드로 변환하였습니다.
+
+---
+
+### 3D Gaussian Splatting
+
+| Light Mode | Dark Mode |
+|:---:|:---:|
+| ![3DGS Light](images/3dgs_light.png) | ![3DGS Dark](images/3dgs_dark.png) |
+
+### Attention Is All You Need (Transformer)
+
+| Light Mode | Dark Mode |
+|:---:|:---:|
+| ![Transformer Light](images/transformer_light.png) | ![Transformer Dark](images/transformer_dark.png) |
 
 ---
 
@@ -21,74 +35,68 @@
 
 - Python 3.10 이상
 - NVIDIA GPU (CUDA 지원)
-- CUDA Toolkit 및 cuDNN 설치
+- CUDA Toolkit 12.x 및 cuDNN 설치
 
 ---
 
 ## 설치
 
-### 1. 패키지 설치
+### 1. 저장소 클론
+
+```bash
+git clone https://github.com/YeonUk-Kim0120/paper-darkmode-converter.git
+cd parser
+```
+
+### 2. 패키지 설치
 
 ```bash
 pip install pymupdf docling numpy
 ```
 
-### 2. PyTorch CUDA 버전 설치
+### 3. PyTorch CUDA 버전 설치
 
-> `pip install torch`로 설치하면 CPU 전용 버전이 설치될 수 있습니다.  
-> 반드시 아래 명령으로 CUDA 지원 버전을 설치하세요.
+> `pip install torch`만 하면 **CPU 전용 버전**이 설치되어 CUDA가 동작하지 않습니다.  
+> 반드시 아래 명령으로 CUDA 지원 버전을 별도로 설치 필요.
 
 ```bash
-# CUDA 12.8용 (RTX 30xx/40xx 시리즈 권장)
+# CUDA 12.8용 (RTX 20xx / 30xx / 40xx 시리즈)
 pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
 ```
 
-설치 후 CUDA 동작 확인:
+### 4. Docling AI 모델 가중치 다운로드
+
+Docling은 **최초 실행 시** 피규어 감지에 필요한 AI 모델 가중치를 자동으로 다운로드.
+
+- 다운로드 경로: `~/.cache/docling/` (Windows: `C:\Users\{사용자}\.cache\docling\`)
+- 용량: 약 1~2 GB
+- 인터넷 연결 필요, 최초 1회만 다운로드 (이후 캐시 재사용)
+
+별도로 미리 받고 싶다면 아래 명령으로 실행 전에 트리거할 수 있습니다:
 
 ```bash
-python -c "import torch; print(torch.cuda.is_available(), torch.cuda.get_device_name(0))"
-# 출력 예: True  NVIDIA GeForce RTX 3060
+python -c "from docling.document_converter import DocumentConverter; DocumentConverter()"
 ```
 
 ---
 
 ## 사용법
 
+### 기본 실행
+
 ```bash
-# 기본값: 12.pdf → 12_dark.pdf
-python model.py
+# paper.pdf → paper_dark.pdf (자동 네이밍)
+python model.py paper.pdf
+```
 
-# 입력 파일 지정: input.pdf → input_dark.pdf
-python model.py input.pdf
+### 입출력 파일 모두 지정
 
-# 입출력 파일 모두 지정
+```bash
 python model.py input.pdf output.pdf
 ```
 
----
-
-## 결과물
-
-| 파일 | 설명 |
-|---|---|
-| `{입력명}_dark.pdf` | 다크모드 변환된 PDF |
-
----
-
-## 주요 설정값
-
-[model.py](model.py) 상단에서 아래 값을 수정할 수 있습니다.
-
-| 변수 | 기본값 | 설명 |
-|---|---|---|
-| `BLACK_THRESH` | `0.15` | 이 값 이하의 밝기를 "검은색"으로 판단 |
-| `WHITE_THRESH` | `0.85` | 이 값 이상의 밝기를 "흰색"으로 판단 |
-| `SNAP_DPI` | `150` | 피규어 스냅샷 해상도 (높을수록 선명, 메모리↑) |
-
----
 
 ## 주의사항
 
-- CUDA가 없는 환경에서는 `extract_figure_bboxes()` 내의 `AcceleratorDevice.CUDA`를 `AcceleratorDevice.CPU`로 변경하세요.
-- Docling은 최초 실행 시 AI 모델 가중치를 자동으로 다운로드합니다 (수 GB, 시간 소요).
-- `SNAP_DPI`를 200~300으로 올리면 피규어 화질이 더 선명해집니다.
+- **피규어 화질**: `SNAP_DPI`를 `300~400`으로 올리면 확대 시에도 선명하게 보입니다.
+- **변환 시간**: 논문 1편 기준 GPU 환경에서 최대 1~5분 소요.
